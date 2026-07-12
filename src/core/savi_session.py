@@ -1,5 +1,7 @@
-from playwright.sync_api import sync_playwright, BrowserContext, Page
+from playwright.sync_api import BrowserContext, Page, sync_playwright
+
 from src.core.config import settings
+from src.core.logger import logger
 
 
 class SaviSession:
@@ -31,10 +33,12 @@ class SaviSession:
     def __exit__(self, *_) -> None:
         self.close()
 
-    def login(self, username: str, password: str) -> None:
+    def login(self) -> None:
         self.page.goto(settings.url_login)
-        # logger.info("Acesse o navegador, faça o login e resolva o CAPTCHA.")
-        # logger.info("Quando estiver dentro do sistema, volte aqui.")
+        self.page.fill(settings.field_username, settings.username.get_secret_value())
+        self.page.fill(settings.field_password, settings.password.get_secret_value())
+        logger.info("Acesse o navegador e resolva o CAPTCHA.")
+        logger.info("Quando estiver dentro do sistema, volte aqui.")
         input("Aperte Enter quando estiver logado... ")
 
     def _assert_logged_in(self) -> None:

@@ -1,6 +1,7 @@
 from enum import StrEnum
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -28,6 +29,12 @@ class Settings(BaseSettings):
     url_solicitacoes: str
     url_pendencias: str
 
+    field_username: str
+    field_password: str
+
+    username: SecretStr
+    password: SecretStr
+
     # Seletores do formulário de produção
     sel_mes: str
     sel_dia_de: str
@@ -52,6 +59,7 @@ class Settings(BaseSettings):
     landing_dir: Path = BASE_DIR / "data" / "landing"
     warehouse_path: Path = BASE_DIR / "data" / "warehouse.duckdb"
     tabela_valores_path: Path = BASE_DIR / "data" / "reference" / "tabela_valores.csv"
+    log_dir: Path = BASE_DIR / "logs"
 
     # Camada gold (PostgreSQL) — serving layer para BI/consultas, alimentada a
     # partir do warehouse DuckDB (bronze/silver).
@@ -63,6 +71,7 @@ class Settings(BaseSettings):
             self.landing_dir,
             self.warehouse_path.parent,
             self.tabela_valores_path.parent,
+            self.log_dir,
         ):
             directory.mkdir(parents=True, exist_ok=True)
 
