@@ -11,7 +11,9 @@ from src.core.config import Environment, settings
 
 
 class InterceptHandler(logging.Handler):
-    """Redireciona logs da stdlib (playwright, urllib3, etc.) para o loguru."""
+    """
+    Redireciona logs da stdlib (playwright, urllib3, etc.) para o loguru.
+    """
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
@@ -30,7 +32,8 @@ class InterceptHandler(logging.Handler):
 
 
 class PostgresLogSink:
-    """Sink do loguru que grava registros WARNING+ na tabela `logs`.
+    """
+    Sink do loguru que grava registros WARNING+ na tabela `logs`.
 
     Usa o texto de exceção montado via `traceback.format_exception` a partir
     do record cru (não da mensagem já formatada pelo loguru), então o dump de
@@ -104,7 +107,8 @@ class PostgresLogSink:
 
 
 class LoggerSetup:
-    """Configura os sinks do loguru uma única vez, na importação do módulo:
+    """
+    Configura os sinks do loguru uma única vez, na importação do módulo:
     console legível para humanos + arquivos rotacionados em disco. Outros
     módulos não usam esta classe diretamente — importam `logger` já pronto.
     """
