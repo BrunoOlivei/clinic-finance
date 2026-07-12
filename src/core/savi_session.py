@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 
-from playwright.sync_api import BrowserContext, Page, TimeoutError, sync_playwright
+from playwright.sync_api import (BrowserContext, Page, TimeoutError,
+                                 sync_playwright)
 
 from src.core.config import settings
 from src.core.logger import logger
