@@ -1,6 +1,8 @@
+from playwright.sync_api import Page
+
 from src.core.config import settings
 from src.core.savi_session import log_step
-from playwright.sync_api import Page
+
 
 def select_month_competency(page: Page, month_competency: str) -> None:
     """
@@ -13,9 +15,11 @@ def select_month_competency(page: Page, month_competency: str) -> None:
     with log_step(f"selecionar o mês de competência: {month_competency}"):
         page.select_option(settings.sel_mes, month_competency)
 
+
 def fill_date_range(page: Page, start_day: str | None, end_day: str | None) -> None:
     """
-    Preenche o forumulário de relatório de produção com dias que se deseja filtrar a competência.
+    Preenche o forumulário de relatório de produção com dias que se deseja filtrar a
+    competência.
     Os dias devem ser passados sempre no formato "DD"
     Eles só podem ser usados se uma competência for selecionada.
 
