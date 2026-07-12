@@ -1,7 +1,27 @@
-from playwright.sync_api import BrowserContext, Page, sync_playwright
+from contextlib import contextmanager
+
+from playwright.sync_api import BrowserContext, Page, TimeoutError, sync_playwright
 
 from src.core.config import settings
 from src.core.logger import logger
+
+
+@contextmanager
+def log_step(description: str):
+    """
+    Context manager que loga o resultado de um passo de interação com a
+    página (sucesso ou falha) e relança a exceção original, se houver.
+    """
+    try:
+        yield
+    except TimeoutError:
+        logger.exception("Falha ao {}", description)
+        raise
+    except Exception:
+        logger.exception("Erro inesperado ao {}", description)
+        raise
+    else:
+        logger.info("{} concluído", description)
 
 
 class SaviSession:
