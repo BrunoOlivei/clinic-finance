@@ -26,11 +26,27 @@ class SaviSession:
             self._context.pages[0] if self._context.pages else self._context.new_page()
         )
 
+    def close(self) -> None:
+        try:
+            if self._context:
+                self._context.close()
+        finally:
+            if self._playwright:
+                self._playwright.stop()
+            self._playwright = None
+            self._context = None
+
     def __enter__(self) -> "SaviSession":
         self.open()
         return self
 
-    def __exit__(self, *_) -> None:
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        if exc_type is not None:
+            logger.warning(
+                f"Sessão encerrada por exceção: {exc_type.__name__}: {exc_value}"
+            )
+        else:
+            logger.info("Sessão encerrada normalmente.")
         self.close()
 
     def login(self) -> None:
