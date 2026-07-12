@@ -1,34 +1,20 @@
 from src.core.config import settings
+from src.core.savi_filters import fill_date_range, select_month_competency
 from src.core.savi_session import SaviSession, log_step
 
 
 class ProductionReportExtractor(SaviSession):
-    def _select_month_competency(self, month_competency: str) -> None:
+    def _select_patient(self, patient_code: str) -> None:
         """
-        Seleciona o mês de competência que se deseja extrair do relatório de produção.
-        O mês deve ser passado no formato "MM/YYYY".
+        Seleciona o código do paciente que se deseja filtrar o relatório de pendências.
 
         Args:
-            month_competency (str): Mês de competência, no formato "MM/YYYY".
+            patient_code (str): Código do paciente que se deseja filtrar o relatório
+            de pendências.
         """
-        with log_step(f"selecionar a competência do mês: {month_competency}"):
-            self.page.select_option(settings.sel_mes, month_competency)
-
-    def _fill_date_range(self, start_day: str | None, end_day: str | None) -> None:
-        """
-        Preenche o forumulário de relatório de produção com dias que se deseja filtrar a competência.
-        Os dias devem ser passados sempre no formato "DD"
-        Eles só podem ser usados se uma competência for selecionada.
-
-        Args:
-            start_day (str | None): Dia de início do intervalo de datas, no formato "DD".
-            end_day (str | None): Dia de fim do intervalo de datas, no formato "DD".
-        """
-        with log_step(f"preencher o intervalo de datas: {start_day} a {end_day}"):
-            if start_day is not None:
-                self.page.fill(settings.sel_dia_de, start_day)
-            if end_day is not None:
-                self.page.fill(settings.sel_dia_ate, end_day)
+        with log_step(f"selecionar o código do paciente: {patient_code}"):
+            self.page.fill(settings.sel_user_code, patient_code)
+            self.page.click(settings.sel_search_user)
 
     def _search(self) -> None:
         """
@@ -48,13 +34,15 @@ class ProductionReportExtractor(SaviSession):
         month_competency: str,
         start_day: str | None = None,
         end_day: str | None = None,
+        patient_code: str | None = None,
     ) -> str:
         """
         Executa a pesquisa do relatório de produção e obtém o conteúdo do mesmo.
 
         Args:
             month_competency (str): Mês de competência, no formato "MM/YYYY".
-            start_day (str | None): Dia de início do intervalo de datas, no formato "DD".
+            start_day (str | None): Dia de início do intervalo de datas, no
+            formato "DD".
             end_day (str | None): Dia de fim do intervalo de datas, no formato "DD".
 
         Returns:
@@ -65,8 +53,10 @@ class ProductionReportExtractor(SaviSession):
             self.page.wait_for_load_state("networkidle")
             self._assert_logged_in()
 
-        self._select_month_competency(month_competency)
-        self._fill_date_range(start_day, end_day)
+        select_month_competency(self.page, month_competency)
+        fill_date_range(self.page, start_day, end_day)
+        if patient_code is not None:
+            self._select_patient(patient_code)
         self._search()
         self.page.wait_for_load_state("networkidle")
 
