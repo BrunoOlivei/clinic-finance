@@ -1,0 +1,33 @@
+{
+  "name": "clinic-finance",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+
+  "features": {
+    // Xvfb + fluxbox + x11vnc + noVNC, exposed on webPort. Lets the headed
+    // Chromium launched by SaviSession (headless=False, manual CAPTCHA) be
+    // seen and controlled from a browser tab instead of a host display.
+    "ghcr.io/devcontainers/features/desktop-lite:1": {
+      "password": "vscode",
+      "webPort": 6080,
+      "vncPort": 5901
+    }
+  },
+
+  "forwardPorts": [6080, 5901, 5432],
+  "portsAttributes": {
+    "6080": { "label": "noVNC (browser GUI)", "onAutoForward": "openBrowser" },
+    "5901": { "label": "VNC" },
+    "5432": { "label": "PostgreSQL" }
+  },
+
+  "postCreateCommand": "uv sync && uv run playwright install chromium",
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["charliermarsh.ruff", "ms-python.python"]
+    }
+  }
+}
