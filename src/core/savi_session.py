@@ -1,4 +1,6 @@
 from contextlib import contextmanager
+from functools import wraps
+from typing import Callable, TypeVar
 
 from playwright.sync_api import (BrowserContext, Page, TimeoutError,
                                  sync_playwright)
@@ -23,6 +25,29 @@ def log_step(description: str):
         raise
     else:
         logger.info("{} concluído", description)
+
+
+
+T = TypeVar("T")
+
+class SessionExpiredError(RuntimeError):
+    """
+    Levantada quando o SAVI redireciona pro login em vez de servir a página pedida.
+    """
+def reauth_on_expired(fn: Callable[..., T]) -> Callable[..., T]:
+    @wraps(fn)
+    def wrapper(self: "SaviSession", *args, **kwargs) -> T:
+        try:
+            return fn(self, *args, **kwargs)
+        except (SessionExpiredError, TimeoutError):
+            if "login" not in self.page.url:
+                raise
+            logger.warning(
+                "Sessão expirada durante '{}' — solicitando novo login.", fn.__name__
+            )
+            self.login()
+            return fn(self, *args, **kwargs)
+    return wrapper
 
 
 class SaviSession:
@@ -80,11 +105,11 @@ class SaviSession:
 
     def _assert_logged_in(self) -> None:
         """
-        Checks whether the session is still authenticated.
+        Verifica se a sessão ainda está autenticada.
 
         Raises:
-            RuntimeError: If the current URL contains "login", indicating the
-                server redirected to the authentication screen.
+            SessionExpiredError: Se a URL atual contém "login", indicando que o
+            servidor redirecionou para a tela de autenticação.
         """
         if "login" in self.page.url:
-            raise RuntimeError("Sessão expirada — rode novamente e faça o login.")
+            raise SessionExpiredError("Sessão expirada — rode novamente e faça o login.")

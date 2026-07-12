@@ -1,6 +1,6 @@
 from src.core.config import settings
 from src.core.savi_filters import fill_date_range, select_month_competency
-from src.core.savi_session import SaviSession, log_step
+from src.core.savi_session import SaviSession, log_step, reauth_on_expired
 
 
 class ProductionReportExtractor(SaviSession):
@@ -28,7 +28,8 @@ class ProductionReportExtractor(SaviSession):
                 )
             ):
                 self.page.click(settings.sel_pesquisar)
-
+    
+    @reauth_on_expired
     def fetch(
         self,
         month_competency: str,
