@@ -1,7 +1,11 @@
+import json
 import logging
 import sys
+import traceback
 
+import psycopg
 from loguru import logger
+from psycopg.types.json import Jsonb
 
 from src.core.config import Environment, settings
 
@@ -25,6 +29,80 @@ class InterceptHandler(logging.Handler):
         )
 
 
+class PostgresLogSink:
+    """Sink do loguru que grava registros WARNING+ na tabela `logs`.
+
+    Usa o texto de exceção montado via `traceback.format_exception` a partir
+    do record cru (não da mensagem já formatada pelo loguru), então o dump de
+    variáveis locais do `diagnose` nunca chega ao banco — evita persistir
+    segredos (ex: settings.password) que por acaso estejam no escopo do erro.
+    """
+
+    TABLE_DDL = """
+        CREATE TABLE IF NOT EXISTS logs (
+            id BIGSERIAL PRIMARY KEY,
+            time TIMESTAMPTZ NOT NULL,
+            level VARCHAR(10) NOT NULL,
+            logger_name TEXT NOT NULL,
+            function TEXT NOT NULL,
+            line INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            exception TEXT,
+            extra JSONB NOT NULL DEFAULT '{}'::jsonb
+        );
+        CREATE INDEX IF NOT EXISTS logs_time_idx ON logs (time DESC);
+    """
+
+    INSERT_SQL = """
+        INSERT INTO logs
+            (time, level, logger_name, function, line, message, exception, extra)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    @staticmethod
+    def _dumps_extra(extra: dict) -> str:
+        # `extra` vem de qualquer `logger.bind(...)` no código, não do
+        # loguru — pode conter tipo não serializável em JSON (date, Path,
+        # SecretStr...). `default=str` evita que isso derrube o insert
+        # silenciosamente numa thread de background (enqueue=True).
+        return json.dumps(extra, default=str)
+
+    def __init__(self, dsn: str) -> None:
+        self._dsn = dsn
+        self._conn = psycopg.connect(dsn, autocommit=True, connect_timeout=5)
+        self._conn.execute(self.TABLE_DDL)
+
+    def __call__(self, message) -> None:
+        params = self._build_params(message.record)
+        try:
+            self._conn.execute(self.INSERT_SQL, params)
+        except psycopg.OperationalError:
+            self._conn = psycopg.connect(self._dsn, autocommit=True, connect_timeout=5)
+            self._conn.execute(self.INSERT_SQL, params)
+
+    @staticmethod
+    def _build_params(record: dict) -> tuple:
+        exception = None
+        if record["exception"] is not None:
+            exception = "".join(
+                traceback.format_exception(
+                    record["exception"].type,
+                    record["exception"].value,
+                    record["exception"].traceback,
+                )
+            )
+        return (
+            record["time"],
+            record["level"].name,
+            record["name"],
+            record["function"],
+            record["line"],
+            record["message"],
+            exception,
+            Jsonb(record["extra"], dumps=PostgresLogSink._dumps_extra),
+        )
+
+
 class LoggerSetup:
     """Configura os sinks do loguru uma única vez, na importação do módulo:
     console legível para humanos + arquivos rotacionados em disco. Outros
@@ -44,6 +122,7 @@ class LoggerSetup:
         self._add_console_sink()
         self._add_file_sink()
         self._add_error_sink()
+        self._add_postgres_sink()
         self._intercept_stdlib_logging()
 
     def _add_console_sink(self) -> None:
@@ -80,6 +159,15 @@ class LoggerSetup:
             backtrace=True,
             diagnose=self.is_dev,
         )
+
+    def _add_postgres_sink(self) -> None:
+        try:
+            sink = PostgresLogSink(settings.postgres_dsn)
+        except psycopg.Error:
+            logger.warning("Postgres indisponível — sink de log no banco desativado.")
+            return
+
+        logger.add(sink, level="WARNING", enqueue=True)
 
     @staticmethod
     def _intercept_stdlib_logging() -> None:
