@@ -6,11 +6,11 @@ from src.core.savi_session import SaviSession, log_step
 class ProductionReportExtractor(SaviSession):
     def _select_patient(self, patient_code: str) -> None:
         """
-        Seleciona o código do paciente que se deseja filtrar o relatório de pendências.
+        Seleciona o código do paciente que se deseja filtrar o relatório de produção.
 
         Args:
             patient_code (str): Código do paciente que se deseja filtrar o relatório
-            de pendências.
+            de produção.
         """
         with log_step(f"selecionar o código do paciente: {patient_code}"):
             self.page.fill(settings.sel_user_code, patient_code)
@@ -44,6 +44,8 @@ class ProductionReportExtractor(SaviSession):
             start_day (str | None): Dia de início do intervalo de datas, no
             formato "DD".
             end_day (str | None): Dia de fim do intervalo de datas, no formato "DD".
+            patient_code (str | None): Código do paciente que se deseja filtrar o
+            relatório de produção.
 
         Returns:
             str: Conteúdo do relatório de produção em HTML.
@@ -57,6 +59,7 @@ class ProductionReportExtractor(SaviSession):
         fill_date_range(self.page, start_day, end_day)
         if patient_code is not None:
             self._select_patient(patient_code)
+
         self._search()
         self.page.wait_for_load_state("networkidle")
 
