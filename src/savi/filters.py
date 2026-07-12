@@ -1,7 +1,7 @@
 from playwright.sync_api import Page
 
 from src.core.config import settings
-from src.core.savi_session import log_step
+from src.savi.session import log_step
 
 
 def select_month_competency(page: Page, month_competency: str) -> None:

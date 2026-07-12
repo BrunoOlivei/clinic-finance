@@ -1,12 +1,12 @@
-# from src.production_reports.extract_data import ProductionReportExtractor
-# from src.production_reports.parser_data import ProductionReportParser
-from src.pending_reports.extract_data import PendingReportExtractor
+import requests
 
-with PendingReportExtractor() as report:
-    report.login()
-    html = report.fetch("06/2026")
+from src.core.config import settings
 
-print(html)
-# teste = ProductionReportParser(html).parse()
-# for item in teste:
-#     print(item)
+payload = {
+    "username": settings.communicare_username.get_secret_value(),
+    "password": settings.communicare_password.get_secret_value(),
+}
+
+response = requests.post(settings.communicare_url_login, json=payload)
+
+print(response.json())
