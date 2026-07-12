@@ -35,24 +35,27 @@ class Settings(BaseSettings):
     username: SecretStr
     password: SecretStr
 
-    # Seletores do formulário de produção
-    sel_mes: str
-    sel_dia_de: str
-    sel_dia_ate: str
-    sel_pesquisar: str
-
-    # Seletores do relatório de pendências
     # IMPORTANT: JSF IDs (j_idt*) are server-generated and may change after a
     # SAVI update. Verify every selector below by inspecting the live page
     # before running.
-    pend_sel_user_code: str
+
+    # Seletores do formulário de produção
+    sel_pesquisar: str
+    sel_search_user: str
+
+    # Seletores do relatório de pendências
     pend_sel_search_user: str
-    pend_sel_mes: str
     pend_sel_situacao: str
     pend_sel_pesquisar: str
     pend_sel_pagination: str
     pend_sel_total: str
     pend_exec_pendente: str
+
+    # Seletores comuns entre relatórios
+    sel_mes: str
+    sel_dia_de: str
+    sel_dia_ate: str
+    sel_user_code: str
 
     # Diretórios / arquivos
     user_data_dir: Path = BASE_DIR / "user-data"
