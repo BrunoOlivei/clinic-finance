@@ -1,0 +1,19 @@
+[project]
+name = "clinic-finance"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "loguru>=0.7.3",
+    "playwright>=1.61.0",
+    "psycopg[binary]>=3.2.0",
+    "pydantic-settings>=2.14.2",
+]
+
+[dependency-groups]
+dev = [
+    "isort>=8.0.1",
+    "ruff>=0.15.21",
+]
