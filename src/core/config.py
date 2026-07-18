@@ -59,6 +59,7 @@ class Settings(BaseSettings):
 
     # Communicare (sistema de gestão do consultório)
     communicare_url_login: str
+    communicare_url_attendance: str
     communicare_username: SecretStr
     communicare_password: SecretStr
 
