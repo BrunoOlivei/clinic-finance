@@ -27,13 +27,15 @@ def log_step(description: str):
         logger.info("{} concluído", description)
 
 
-
 T = TypeVar("T")
+
 
 class SessionExpiredError(RuntimeError):
     """
     Levantada quando o SAVI redireciona pro login em vez de servir a página pedida.
     """
+
+
 def reauth_on_expired(fn: Callable[..., T]) -> Callable[..., T]:
     @wraps(fn)
     def wrapper(self: "SaviSession", *args, **kwargs) -> T:
@@ -47,6 +49,7 @@ def reauth_on_expired(fn: Callable[..., T]) -> Callable[..., T]:
             )
             self.login()
             return fn(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -112,4 +115,6 @@ class SaviSession:
             servidor redirecionou para a tela de autenticação.
         """
         if "login" in self.page.url:
-            raise SessionExpiredError("Sessão expirada — rode novamente e faça o login.")
+            raise SessionExpiredError(
+                "Sessão expirada — rode novamente e faça o login."
+            )
