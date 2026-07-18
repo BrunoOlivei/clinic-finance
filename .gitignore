@@ -219,6 +219,16 @@ data/
 # regra *.csv acima (ex: tests/fixtures/tabela_valores.csv)
 !tests/fixtures/**/*.csv
 
+# Seeds do dbt são dado de referência mantido manualmente — devem ser
+# versionados mesmo com a regra *.csv acima
+!dbt/seeds/**/*.csv
+
+# Artefatos gerados pelo dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+
 # Logs gerados em execução
 logs/
 
@@ -226,3 +236,4 @@ CLAUDE.md
 .claude/
 
 backlog.md
+.my-dotfiles/
