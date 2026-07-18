@@ -1,0 +1,40 @@
+version: 2
+
+seeds:
+  - name: tabela_valores_procedimentos
+    description: >
+      Mapeamento entre o código do procedimento no SAVI e no Communicare,
+      com o nome do procedimento e o valor pago vigente. Mantida manualmente
+      — atualizar quando o plano de saúde reajustar a tabela de valores.
+      Reflete só o estado ATUAL de cada procedimento; o histórico de valores
+      é responsabilidade do snapshot tabela_valores_procedimentos_snapshot,
+      que roda em cima deste seed.
+    config:
+      column_types:
+        savi_code: varchar
+        procedure_name: varchar
+        paid_value: decimal(10, 2)
+        updated_at: timestamp
+    columns:
+      - name: savi_code
+        description: Código do procedimento no sistema SAVI. Chave natural da tabela.
+        tests:
+          - unique
+          - not_null
+      - name: procedure_name
+        description: Nome do procedimento.
+        tests:
+          - not_null
+      - name: paid_value
+        description: Valor pago vigente para o procedimento, conforme tabela do plano.
+        tests:
+          - not_null
+      - name: updated_at
+        description: >
+          Data em que ESTE valor passou a valer de fato (a data do reajuste
+          anunciado pelo plano), não a data em que a linha foi editada no
+          CSV. O snapshot usa esta coluna (estratégia timestamp) para
+          historizar corretamente mesmo que a edição do CSV aconteça com
+          atraso em relação ao reajuste real.
+        tests:
+          - not_null
