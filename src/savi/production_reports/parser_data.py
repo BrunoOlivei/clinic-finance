@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Generator
 
 from bs4 import BeautifulSoup, Tag
 
@@ -69,7 +69,7 @@ class ProductionReportParser:
 
     def _parse_data_row(
         self, cells: list[Tag], service: str | None, branch: str | None
-    ) -> dict[str, str]:
+    ) -> dict[str, str | None]:
         """
         Extrai os dados de uma linha da tabela.
 
@@ -103,7 +103,7 @@ class ProductionReportParser:
             "password": self._text(cells[9]),
         }
 
-    def parse(self) -> Iterator[dict[str, str]]:
+    def parse(self) -> Generator[dict[str, str | None]]:
         """
         Parseia a tabela de dados e retorna um dicionário com os dados.
 

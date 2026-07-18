@@ -79,7 +79,7 @@ class PendingReportExtractor(SaviSession):
             self._select_patient(patient_code)
         if status is not None:
             self._select_status(status)
-            
+
         self._search()
         self.page.wait_for_timeout(1500)
         with log_step("definir o número de registros a serem exibidos"):

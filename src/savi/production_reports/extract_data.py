@@ -28,7 +28,7 @@ class ProductionReportExtractor(SaviSession):
                 )
             ):
                 self.page.click(settings.sel_pesquisar)
-    
+
     @reauth_on_expired
     def fetch(
         self,
