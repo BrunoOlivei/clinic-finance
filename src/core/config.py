@@ -66,7 +66,6 @@ class Settings(BaseSettings):
     user_data_dir: Path = BASE_DIR / "user-data"
     landing_dir: Path = BASE_DIR / "data" / "landing"
     warehouse_path: Path = BASE_DIR / "data" / "warehouse.duckdb"
-    tabela_valores_path: Path = BASE_DIR / "data" / "reference" / "tabela_valores.csv"
     log_dir: Path = BASE_DIR / "logs"
 
     # Camada gold (PostgreSQL) — serving layer para BI/consultas, alimentada a
@@ -78,7 +77,6 @@ class Settings(BaseSettings):
             self.user_data_dir,
             self.landing_dir,
             self.warehouse_path.parent,
-            self.tabela_valores_path.parent,
             self.log_dir,
         ):
             directory.mkdir(parents=True, exist_ok=True)
