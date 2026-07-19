@@ -59,7 +59,7 @@ class Settings(BaseSettings):
 
     # Diretórios / arquivos
     user_data_dir: Path = BASE_DIR / "user-data"
-    landing_dir: Path = BASE_DIR / "data" / "landing"
+    bronze_dir: Path = BASE_DIR / "data" / "bronze"
     warehouse_path: Path = BASE_DIR / "data" / "warehouse.duckdb"
     log_dir: Path = BASE_DIR / "logs"
 
@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     def model_post_init(self, __context) -> None:
         for directory in (
             self.user_data_dir,
-            self.landing_dir,
+            self.bronze_dir,
             self.warehouse_path.parent,
             self.log_dir,
         ):
