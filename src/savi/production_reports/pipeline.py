@@ -1,5 +1,8 @@
+from datetime import datetime
 from typing import Annotated
 
+from src.core.bronze import write_to_bronze
+from src.core.config import settings
 from src.core.logger import logger
 from src.savi.production_reports.extract_data import ProductionReportExtractor
 from src.savi.production_reports.parser_data import ProductionReportParser
@@ -13,6 +16,7 @@ class ProductionReportPipeline:
         month_competency: Annotated[str, "Mês de competência, no formato MM/AAAA."],
     ):
         self.month_competency = month_competency
+        self.bronze_path = settings.bronze_dir / "production_reports"
 
     def get_data(self) -> str:
         """
@@ -43,9 +47,18 @@ class ProductionReportPipeline:
         logger.info("Produções processadas: {} linhas válidas", len(valid_rows))
         return valid_rows
 
-    def print_data(self, valid_rows):
-        for row in valid_rows:
-            print(row)
+    def write_bronze_data(self, valid_rows: list[ProductionReportRow]) -> None:
+        """
+        Grava os dados de uma tabela Bronze.
+
+        Args:
+            valid_rows (list[ProductionReportRow]): Dados validados.
+        """
+        partition_value = datetime.strptime(self.month_competency, "%m/%Y").strftime(
+            "%Y%m"
+        )
+        logger.info("Gravando dados de produção no Bronze para {}", partition_value)
+        write_to_bronze(valid_rows, self.bronze_path, partition_value)
 
     def main(self) -> None:
         """
@@ -53,4 +66,4 @@ class ProductionReportPipeline:
         """
         html_data = self.get_data()
         valid_rows = self.process_data(html_data)
-        self.print_data(valid_rows)
+        self.write_bronze_data(valid_rows)
