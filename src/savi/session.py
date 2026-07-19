@@ -20,6 +20,9 @@ def log_step(description: str):
     except TimeoutError:
         logger.exception("Falha ao {}", description)
         raise
+    except SessionExpiredError:
+        logger.exception("Sessão expirada ao {}", description)
+        raise
     except Exception:
         logger.exception("Erro inesperado ao {}", description)
         raise
