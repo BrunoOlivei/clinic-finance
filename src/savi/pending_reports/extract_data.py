@@ -69,7 +69,7 @@ class PendingReportExtractor(SaviSession):
         """
         with log_step("acessar a página de relatório de pendências"):
             self.page.goto(settings.url_pendencias)
-            self.page.wait_for_load_state("networkidle")
+            self.page.wait_for_timeout(1500)
             self._assert_logged_in()
 
         select_month_competency(self.page, month_competency)
