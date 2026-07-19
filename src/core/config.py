@@ -57,12 +57,6 @@ class Settings(BaseSettings):
     sel_dia_ate: str
     sel_user_code: str
 
-    # Communicare (sistema de gestão do consultório)
-    communicare_url_login: str
-    communicare_url_attendance: str
-    communicare_username: SecretStr
-    communicare_password: SecretStr
-
     # Diretórios / arquivos
     user_data_dir: Path = BASE_DIR / "user-data"
     landing_dir: Path = BASE_DIR / "data" / "landing"
