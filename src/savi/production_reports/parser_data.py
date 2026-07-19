@@ -81,26 +81,26 @@ class ProductionReportParser:
         Returns:
             dict[str, str]: Dicionário com os dados da linha.
         """
-        user_code, user_name = self._split_code_name(cells[1])
-        doctor_code, doctor_name = self._split_code_name(cells[2])
-        procedure_code, procedure_name = self._split_code_name(cells[3])
+        cd_patient, nm_patient = self._split_code_name(cells[1])
+        cd_doctor, nm_doctor = self._split_code_name(cells[2])
+        cd_procedure, nm_procedure = self._split_code_name(cells[3])
 
         return {
-            "service": service,
-            "branch": branch,
-            "data_execution": self._text(cells[0]),
-            "user_code": user_code,
-            "user_name": user_name,
-            "doctor_code": doctor_code,
-            "doctor_name": doctor_name,
-            "procedure_code": procedure_code,
-            "procedure_name": procedure_name,
-            "urgency": self._text(cells[4]),
-            "qty_authorized": self._text(cells[5]),
-            "qty_performed": self._text(cells[6]),
-            "date_authorization": self._text(cells[7]),
-            "number_guide": self._text(cells[8]),
-            "password": self._text(cells[9]),
+            "tp_service": service,
+            "nm_branch": branch,
+            "dt_execution": self._text(cells[0]),
+            "cd_patient": cd_patient,
+            "nm_patient": nm_patient,
+            "cd_doctor": cd_doctor,
+            "nm_doctor": nm_doctor,
+            "cd_procedure": cd_procedure,
+            "nm_procedure": nm_procedure,
+            "is_urgent": self._text(cells[4]),
+            "qt_authorized": self._text(cells[5]),
+            "qt_executed": self._text(cells[6]),
+            "dt_authorization": self._text(cells[7]),
+            "nr_guide": self._text(cells[8]),
+            "cd_auth_password": self._text(cells[9]),
         }
 
     def parse(self) -> Generator[dict[str, str | None]]:
