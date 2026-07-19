@@ -86,9 +86,8 @@ class ProductionReportParser:
         cd_procedure, nm_procedure = self._split_code_name(cells[3])
 
         return {
-            "tp_service": service,
-            "nm_branch": branch,
-            "dt_execution": self._text(cells[0]),
+            "cd_auth_password": self._text(cells[9]),
+            "nr_guide": self._text(cells[8]),
             "cd_patient": cd_patient,
             "nm_patient": nm_patient,
             "cd_doctor": cd_doctor,
@@ -96,11 +95,12 @@ class ProductionReportParser:
             "cd_procedure": cd_procedure,
             "nm_procedure": nm_procedure,
             "is_urgent": self._text(cells[4]),
-            "qt_authorized": self._text(cells[5]),
-            "qt_executed": self._text(cells[6]),
             "dt_authorization": self._text(cells[7]),
-            "nr_guide": self._text(cells[8]),
-            "cd_auth_password": self._text(cells[9]),
+            "qt_authorized": self._text(cells[5]),
+            "dt_execution": self._text(cells[0]),
+            "qt_executed": self._text(cells[6]),
+            "tp_service": service,
+            "nm_branch": branch,
         }
 
     def parse(self) -> Generator[dict[str, str | None]]:

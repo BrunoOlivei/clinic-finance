@@ -4,9 +4,8 @@ from pydantic import BaseModel, field_validator, model_validator
 
 
 class ProductionReportRow(BaseModel):
-    tp_service: str | None
-    nm_branch: str | None
-    dt_execution: date
+    cd_auth_password: str
+    nr_guide: str
     cd_patient: str
     nm_patient: str
     cd_doctor: str
@@ -15,11 +14,12 @@ class ProductionReportRow(BaseModel):
     cd_procedure: str
     nm_procedure: str
     is_urgent: bool
-    qt_authorized: int
-    qt_executed: int
     dt_authorization: date
-    nr_guide: str
-    cd_auth_password: str
+    qt_authorized: int
+    dt_execution: date
+    qt_executed: int
+    tp_service: str | None
+    nm_branch: str | None
 
     @field_validator("nm_branch")
     @classmethod
