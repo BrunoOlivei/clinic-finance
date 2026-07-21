@@ -223,6 +223,10 @@ data/
 # versionados mesmo com a regra *.csv acima
 !dbt/seeds/**/*.csv
 
+# profiles.yml é onde credencial de conexão real do dbt fica — mesmo cuidado
+# que .env. Versionar só o .example, com os defaults de dev.
+dbt/profiles.yml
+
 # Artefatos gerados pelo dbt
 dbt/target/
 dbt/dbt_packages/

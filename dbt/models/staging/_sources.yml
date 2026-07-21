@@ -1,0 +1,11 @@
+sources:
+  - name: bronze
+    tables:
+      - name: production_reports
+        meta:
+          plugin: delta
+          delta_table_path: "{{ env_var('BRONZE_DIR') }}/production_reports"
+      - name: pending_reports
+        meta:
+          plugin: delta
+          delta_table_path: "{{ env_var('BRONZE_DIR') }}/pending_reports"

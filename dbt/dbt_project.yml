@@ -16,6 +16,22 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+# Anexa o Postgres (camada gold) como catálogo dentro da mesma sessão DuckDB.
+# Feito via SQL bruto, não pelo plugin `postgres` do dbt-duckdb: essa versão
+# do plugin (1.10.1, a mais recente disponível) tem um bug — o construtor não
+# aceita o argumento `credentials` que o dbt-duckdb sempre passa.
+on-run-start:
+  - "INSTALL postgres; LOAD postgres;"
+  - "ATTACH '{{ env_var('POSTGRES_DSN', 'postgresql://clinic:clinic@localhost:5432/clinic_finance') }}' AS gold_pg (TYPE POSTGRES);"
+
 seeds:
   clinic_finance:
     +schema: reference
+
+models:
+  clinic_finance:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+      +database: gold_pg
