@@ -42,11 +42,10 @@ producao AS (
       )
       ELSE 0
     END AS vl_room,
-    p.qt_executed
     p.dt_period,
     p.created_at,
     p.updated_at,
-    row_number() OVER (PARTITION BY p.nr_guide, p.cd_procedure ORDER BY v.updated_at DESC) AS rn
+    row_number() OVER (PARTITION BY p.nr_guide, p.cd_procedure, p.cd_auth_password ORDER BY v.updated_at DESC) AS rn
     FROM producao AS p
     LEFT JOIN valores AS v
         ON v.savi_code = p.cd_procedure
@@ -54,7 +53,29 @@ producao AS (
 )
 
 select
-    * exclude (rn),
-    vl_procedure + vl_room as vl_total
+  cd_auth_password,
+  nr_guide,
+  tp_service,
+  nm_branch,
+  dt_execution,
+  cd_patient,
+  nm_patient,
+  cd_doctor,
+  sg_doctor_state,
+  nm_doctor,
+  cd_procedure,
+  nm_procedure,
+  is_urgent,
+  qt_authorized,
+  dt_authorization,
+  qt_executed,
+  vl_unit_procedure,
+  vl_procedure,
+  tx_room,
+  vl_room,
+  vl_procedure + vl_room as vl_total,
+  dt_period,
+  created_at,
+  updated_at
 from valor_vigente
 where rn = 1
