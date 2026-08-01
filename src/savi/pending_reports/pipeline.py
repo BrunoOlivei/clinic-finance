@@ -62,7 +62,7 @@ class PendingReportPipeline:
             "%Y%m"
         )
         merge_predicate = (
-            "target.mes_competencia = source.mes_competencia AND "
+            "target.dt_period = source.dt_period AND "
             "target.cd_patient = source.cd_patient AND "
             "target.nm_patient = source.nm_patient AND "
             "target.cd_doctor = source.cd_doctor AND "

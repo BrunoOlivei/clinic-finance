@@ -1,0 +1,159 @@
+version: 2
+
+models:
+  - name: mart_faturamento
+    description: "Produção médica com valor vigente na época do procedimento"
+    columns:
+      - name: cd_auth_password
+        description: "Código de senha de execução do procedimento ou consulta"
+        tests:
+          - not_null
+      - name: nr_guide
+        description: "Número da guia"
+        tests:
+          - not_null
+      - name: tp_service
+        description: "Tipo de serviço"
+        tests:
+          - not_null
+      - name: nm_branch
+        description: "Nome do plano de atendimento"
+        tests:
+          - not_null
+      - name: dt_execution
+        description: "Data de execução do procedimento"
+        tests:
+          - not_null
+      - name: cd_patient
+        description: "Código do paciente"
+        tests:
+          - not_null
+      - name: nm_patient
+        description: "Nome do paciente"
+        tests:
+          - not_null
+      - name: cd_doctor
+        description: "Número de registro CRM do médico"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["98663"]
+      - name: sg_doctor_state
+        description: "Sigla de unidade federativa do registro no CRM do médico"
+        tests:
+          - not_null
+      - name: nm_doctor
+        description: "Nome do médico"
+        tests:
+          - not_null
+      - name: cd_procedure
+        description: "Código do procedimento"
+        tests:
+          - not_null
+      - name: nm_procedure
+        description: "Nome do procedimento"
+        tests:
+          - not_null
+      - name: is_urgent
+        description: "Indica se o procedimento é urgente"
+        tests:
+          - not_null
+      - name: qt_authorized
+        description: "Quantidade autorizada"
+        tests:
+          - not_null
+      - name: dt_authorization
+        description: "Data de autorização"
+        tests:
+          - not_null
+      - name: qt_executed
+        description: "Quantidade executada"
+        tests:
+          - not_null
+      - name: vl_unit_procedure
+        description: "Valor unitário do procedimento"
+        tests:
+          - not_null
+      - name: vl_procedure
+        description: "Valor do procedimento (quantidade executada × valor unitário)"
+        tests:
+          - not_null
+      - name: tx_room
+        description: "Indica se o adicional de taxa de sala precisa ser aplicado"
+        tests:
+          - not_null
+      - name: vl_room
+        description: "Valor do adicional de taxa de sala"
+      - name: vl_total
+        description: "Valor total do procedimento com adicional de taxa de sala"
+      - name: dt_period
+        description: "Período de execução do procedimento"
+        tests:
+          - not_null
+      - name: created_at
+        description: "Data de criação do registro"
+        tests:
+          - not_null
+      - name: updated_at
+        description: "Data de atualização do registro"
+        tests:
+          - not_null
+  
+  - name: mart_pendencias_atuais
+    description: "Procedimentos pendentes de execução atuais"
+    columns:
+      - name: cd_auth_password
+        description: "Código de senha de execução do procedimento ou consulta"
+        tests:
+          - not_null
+      - name: cd_patient
+        description: "Código do paciente"
+        tests:
+          - not_null
+      - name: nm_patient
+        description: "Nome do paciente"
+        tests:
+          - not_null
+      - name: cd_doctor
+        description: "Número de registro CRM do médico"
+        tests:
+          - not_null
+      - name: nm_doctor
+        description: "Nome do médico"
+        tests:
+          - not_null
+      - name: cd_procedure
+        description: "Código do procedimento"
+        tests:
+          - not_null
+      - name: nm_procedure
+        description: "Nome do procedimento"
+        tests:
+          - not_null
+      - name: dt_authorization
+        description: "Data de autorização"
+        tests:
+          - not_null
+      - name: qt_authorized
+        description: "Quantidade autorizada"
+        tests:
+          - not_null
+      - name: qt_pending
+        description: "Quantidade pendente de execução"
+        tests:
+          - not_null
+      - name: tp_situation
+        description: "Status da solicitação de procedimento"
+        tests:
+          - not_null
+      - name: ds_observation
+        description: "Descrição da observação do status da solicitação de procedimento"
+      - name: dt_period
+        description: "Período da solicitação de procedimento"
+        tests:
+          - not_null
+      - name: created_at
+        description: "Data de criação do registro"
+        tests:
+          - not_null

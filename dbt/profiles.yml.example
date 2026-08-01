@@ -7,3 +7,7 @@ clinic_finance:
       threads: 4
       plugins:
         - module: delta
+        - module: dbt_plugins.postgres_attach
+          config:
+            dsn: "{{ env_var('POSTGRES_DSN', 'postgresql://clinic:clinic@localhost:5432/clinic_finance') }}"
+            duckdb_alias: gold_pg

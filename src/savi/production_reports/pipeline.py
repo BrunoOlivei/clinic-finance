@@ -61,7 +61,7 @@ class ProductionReportPipeline:
             "%Y%m"
         )
         merge_predicate = (
-            "target.mes_competencia = source.mes_competencia AND "
+            "target.dt_period = source.dt_period AND "
             "target.cd_auth_password = source.cd_auth_password AND "
             "target.nr_guide = source.nr_guide"
         )

@@ -44,7 +44,7 @@ def write_to_bronze(
         now = datetime.now()
         records = [row.model_dump() for row in rows]
         for record in records:
-            record["mes_competencia"] = month_competency
+            record["dt_period"] = month_competency
             record["created_at"] = now
             if update_on_match:
                 record["updated_at"] = now
@@ -54,7 +54,7 @@ def write_to_bronze(
             write_deltalake(
                 table_path,
                 table,
-                partition_by=["mes_competencia"],
+                partition_by=["dt_period"],
                 mode="append",
             )
             return
