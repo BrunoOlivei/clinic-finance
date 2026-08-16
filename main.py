@@ -1,9 +1,18 @@
+import sys
+from datetime import datetime
+
+from src.core.logger import logger
 from src.savi.pending_reports.pipeline import PendingReportPipeline
 from src.savi.production_reports.pipeline import ProductionReportPipeline
 
+MONTH_COMPETENCY = "08/2026"
 
-MONTH_COMPETENCY = "07/2026"
+if __name__ == "__main__":
+    try:
+        datetime.strptime(MONTH_COMPETENCY, "%m/%Y")
+    except ValueError:
+        logger.error("Formato de data inválido: {}", MONTH_COMPETENCY)
+        sys.exit(1)
 
-ProductionReportPipeline(MONTH_COMPETENCY).main()
-PendingReportPipeline(MONTH_COMPETENCY).main()
-
+    ProductionReportPipeline(MONTH_COMPETENCY).main()
+    PendingReportPipeline(MONTH_COMPETENCY).main()

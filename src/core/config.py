@@ -26,14 +26,10 @@ class Settings(BaseSettings):
     # URLs do SAVI
     url_login: str
     url_producao: str
-    url_solicitacoes: str
     url_pendencias: str
 
     field_username: str
     field_password: str
-
-    username: SecretStr
-    password: SecretStr
 
     # IMPORTANT: JSF IDs (j_idt*) are server-generated and may change after a
     # SAVI update. Verify every selector below by inspecting the live page
@@ -66,6 +62,12 @@ class Settings(BaseSettings):
     # Camada gold (PostgreSQL) — serving layer para BI/consultas, alimentada a
     # partir do warehouse DuckDB (bronze/silver).
     postgres_dsn: str = "postgresql://clinic:clinic@localhost:5432/clinic_finance"
+
+    @property
+    def sqlalchemy_dsn(self) -> str:
+        if self.postgres_dsn.startswith("postgres://"):
+            return self.postgres_dsn.replace("postgres://", "postgresql+psycopg://", 1)
+        return self.postgres_dsn.replace("postgresql://", "postgresql+psycopg://", 1)
 
     def model_post_init(self, __context) -> None:
         for directory in (

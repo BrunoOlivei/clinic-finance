@@ -10,11 +10,7 @@ def notify_telegram_on_failure(context: dict) -> None:
     task_id = context["task_instance"].task_id
     log_url = context["task_instance"].log_url
 
-    message = (
-        f"❌ Falha na DAG {dag_id}\n"
-        f"Task: {task_id}\n"
-        f"Log: {log_url}"
-    )
+    message = f"❌ Falha na DAG {dag_id}\nTask: {task_id}\nLog: {log_url}"
 
     response = requests.post(
         f"https://api.telegram.org/bot{token}/sendMessage",
