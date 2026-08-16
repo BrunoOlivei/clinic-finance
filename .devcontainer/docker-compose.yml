@@ -1,3 +1,18 @@
+# Config compartilhada pelos 3 serviços do Airflow (init/webserver/scheduler)
+# — evita repetir imagem/env/volumes em cada um.
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.10.4
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://clinic:clinic@db:5432/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__WEBSERVER__SECRET_KEY: clinic-finance-dev-secret-key
+  volumes:
+    - ../dags:/opt/airflow/dags
+    # Volume nomeado (não bind mount) — evita ter que casar o UID do
+    # container Airflow (50000) com o do host pra poder escrever logs.
+    - airflow-logs:/opt/airflow/logs
+
 services:
   app:
     build:
@@ -23,8 +38,60 @@ services:
       POSTGRES_DB: clinic_finance
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      # Só roda em volume novo/vazio. Se o volume já existir (caso comum
+      # aqui, já tem dado real de outros épicos), crie o banco `airflow`
+      # manualmente uma vez: docker compose exec db createdb -U clinic airflow
+      - ./init-airflow-db.sql:/docker-entrypoint-initdb.d/init-airflow-db.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      # `depends_on: - db` só espera o container iniciar, não o Postgres
+      # aceitar conexões — sem isso, o airflow-init corre `db migrate`
+      # antes do banco estar pronto e falha na primeira subida.
+      test: ["CMD-SHELL", "pg_isready -U clinic -d clinic_finance"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  airflow-init:
+    <<: *airflow-common
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin --password admin \
+          --firstname Admin --lastname Admin \
+          --role Admin --email admin@example.com || true
+
+  airflow-webserver:
+    <<: *airflow-common
+    restart: unless-stopped
+    depends_on:
+      # airflow-init é um script one-shot (migrate + create user) que sai
+      # após terminar — "service_completed_successfully" espera o exit 0,
+      # diferente do default que só espera o container iniciar.
+      airflow-init:
+        condition: service_completed_successfully
+    ports:
+      # Host 8081 -> container 8080 (porta padrão do Airflow por dentro).
+      # 8080 no host fica livre pro `dbt docs serve`, que usa essa porta
+      # como padrão.
+      - "8081:8080"
+    command: webserver
+
+  airflow-scheduler:
+    <<: *airflow-common
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    command: scheduler
 
 volumes:
   postgres-data:
+  airflow-logs:

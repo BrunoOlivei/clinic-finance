@@ -16,11 +16,12 @@
     }
   },
 
-  "forwardPorts": [6080, 5901, 5432],
+  "forwardPorts": [6080, 5901, 5432, 8081],
   "portsAttributes": {
     "6080": { "label": "noVNC (browser GUI)", "onAutoForward": "openBrowser" },
     "5901": { "label": "VNC" },
-    "5432": { "label": "PostgreSQL" }
+    "5432": { "label": "PostgreSQL" },
+    "8081": { "label": "Airflow webserver" }
   },
 
   "postCreateCommand": "uv sync && uv run playwright install chromium",
