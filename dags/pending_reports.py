@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 
+from alerts import notify_telegram_on_failure
+
 with DAG(
     dag_id="PendingReports",
     start_date=datetime(2026, 1, 1),
@@ -26,6 +28,7 @@ with DAG(
             '$(docker ps -q --filter "label=com.docker.compose.service=app") '
             "uv run dbt build --select stg_pending_reports+"
         ),
+        on_failure_callback=notify_telegram_on_failure,
     )
 
     task_extract_pending >> task_dbt_build
