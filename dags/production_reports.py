@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-
 from alerts import notify_telegram_on_failure
 
 with DAG(

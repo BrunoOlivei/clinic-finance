@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 
 from src.core.bronze import write_to_bronze
+from src.core.checkpoints import record_checkpoint
 from src.core.config import settings
 from src.core.logger import logger
 from src.savi.production_reports.extract_data import ProductionReportExtractor
@@ -81,3 +82,4 @@ class ProductionReportPipeline:
         html_data = self.get_data()
         valid_rows = self.process_data(html_data)
         self.write_bronze_data(valid_rows)
+        record_checkpoint("production_reports", self.month_competency)

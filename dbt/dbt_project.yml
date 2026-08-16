@@ -27,3 +27,4 @@ models:
     marts:
       +materialized: table
       +database: gold_pg
+      +schema: gold
