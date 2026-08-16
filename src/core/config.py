@@ -1,6 +1,7 @@
 from enum import StrEnum
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -29,6 +30,9 @@ class Settings(BaseSettings):
 
     field_username: str
     field_password: str
+
+    username: SecretStr
+    password: SecretStr
 
     # IMPORTANT: JSF IDs (j_idt*) are server-generated and may change after a
     # SAVI update. Verify every selector below by inspecting the live page
