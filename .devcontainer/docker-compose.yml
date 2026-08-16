@@ -21,6 +21,10 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
+    # Docker aloca só 64MB de /dev/shm por padrão — pouco pro Chromium
+    # headed do Playwright, que pode crashar/renderizar em preto sob
+    # qualquer carga (ex.: preencher o form de login) sem esse aumento.
+    shm_size: "1gb"
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
