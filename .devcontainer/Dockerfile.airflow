@@ -1,0 +1,11 @@
+# Estende a imagem oficial do Airflow só com o CLI do Docker (sem o daemon).
+# As tasks da DAG não rodam a lógica do projeto aqui dentro — elas fazem
+# `docker exec` no container `app`, que já tem Playwright/Chromium, o
+# display do noVNC e o dbt instalados e testados. Evita duplicar esse
+# ambiente (e resolver compartilhamento de X11) numa segunda imagem.
+FROM apache/airflow:2.10.4
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends docker.io \
+    && rm -rf /var/lib/apt/lists/*
+USER airflow

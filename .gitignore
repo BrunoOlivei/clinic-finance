@@ -240,5 +240,6 @@ CLAUDE.md
 .claude/
 
 backlog.md
+dbt_commands.md
 .my-dotfiles/
 tasks
