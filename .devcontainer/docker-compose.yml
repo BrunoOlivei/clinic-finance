@@ -1,7 +1,10 @@
 # Config compartilhada pelos 3 serviços do Airflow (init/webserver/scheduler)
 # — evita repetir imagem/env/volumes em cada um.
 x-airflow-common: &airflow-common
-  image: apache/airflow:2.10.4
+  image: clinic_finance/airflow:local
+  build:
+    context: ..
+    dockerfile: .devcontainer/Dockerfile.airflow
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://clinic:clinic@db:5432/airflow
@@ -87,9 +90,20 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     restart: unless-stopped
+    # Roda como root só neste serviço — precisa acessar
+    # /var/run/docker.sock (montado do host) pra dar `docker exec` no
+    # container `app` a partir das tasks. Ignora permissão de grupo no
+    # socket por completo; aceitável porque é ambiente local, sem
+    # exposição externa. `airflow-webserver`/`airflow-init` continuam
+    # com o usuário padrão da imagem, sem esse privilégio.
+    user: "0:0"
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - airflow-logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     command: scheduler
 
 volumes:
