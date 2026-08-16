@@ -106,8 +106,14 @@ class SaviSession:
         self.page.fill(settings.field_username, settings.username.get_secret_value())
         self.page.fill(settings.field_password, settings.password.get_secret_value())
         logger.info("Acesse o navegador e resolva o CAPTCHA.")
-        logger.info("Quando estiver dentro do sistema, volte aqui.")
-        input("Aperte Enter quando estiver logado... ")
+
+        with log_step("aguardar login (captcha resolvido manualmente)"):
+            self.page.wait_for_url(
+                lambda url: "login" not in url,
+                timeout=20
+                * 60
+                * 1000,  # 20 min em ms — playwright espera timeout em ms, não segundos
+            )
 
     def _assert_logged_in(self) -> None:
         """
