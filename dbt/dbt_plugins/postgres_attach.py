@@ -1,8 +1,7 @@
 from typing import Any, Dict, Optional
 
-from duckdb import DuckDBPyConnection
-
 from dbt.adapters.duckdb.plugins import BasePlugin
+from duckdb import DuckDBPyConnection
 
 PG_EXT = "postgres"
 
