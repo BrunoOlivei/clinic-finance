@@ -1,0 +1,14 @@
+sources:
+  - name: bronze
+    description: "Camada bronze — dados brutos validados pelo contrato Pydantic, gravados em Delta Lake a partir da extração da SAVI."
+    tables:
+      - name: production_reports
+        description: "Produção médica lançada junto ao plano de saúde, extraída do relatório de produção da SAVI."
+        meta:
+          plugin: delta
+          delta_table_path: "{{ env_var('BRONZE_DIR', '../data/bronze') }}/production_reports"
+      - name: pending_reports
+        description: "Histórico de pendências de autorização/execução, extraído do relatório de pendências da SAVI."
+        meta:
+          plugin: delta
+          delta_table_path: "{{ env_var('BRONZE_DIR', '../data/bronze') }}/pending_reports"

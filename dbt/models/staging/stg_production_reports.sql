@@ -1,0 +1,21 @@
+SELECT
+    tp_service,
+    nm_branch,
+    dt_execution,
+    cd_patient,
+    nm_patient,
+    cd_doctor,
+    sg_doctor_state,
+    nm_doctor,
+    cd_procedure,
+    nm_procedure,
+    is_urgent,
+    qt_authorized,
+    qt_executed,
+    dt_authorization,
+    nr_guide,
+    cd_auth_password,
+    dt_period,
+    created_at,
+    updated_at
+FROM {{ source('bronze', 'production_reports') }}
